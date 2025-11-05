@@ -40,7 +40,7 @@ func (d *Direkt) Handle(w http.ResponseWriter, r *http.Request, l zerolog.Logger
 	id, err := validateRequest(r)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		w.WriteHeader(http.StatusBadRequest)
+		// w.WriteHeader(http.StatusBadRequest)
 		l.Err(err).Msg("Error validating request parameters")
 		return
 	}

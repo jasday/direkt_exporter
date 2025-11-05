@@ -97,7 +97,8 @@ var encoderMetrics = []metrics.Gauge{
 		Labels: []string{
 			LabelEncoderIndex,
 			LabelEncoderName,
-			LabelCodec,
+			LabelAudioIndex,
+			LabelBitDepth,
 			LabelAudioSampleRate,
 			LabelAudioChannels,
 		},
@@ -360,21 +361,16 @@ func encoders(ctx context.Context, l zerolog.Logger, registry prometheus.Registe
 			metrics.BoolToString(e.VideoSource.Video.Format.ForcedAspect),
 		).Set(metrics.BoolToFloat64(e.VideoSource.Available))
 
-		// TODO
-		// mtrcs[MetricEncoderAudioInputStatus].WithLabelValues(
-		// 	encoderIdx,
-		// 	e.Description,
-		// 	fmt.Sprintf("%.2f", e.VideoSource.Video.Format.Framerate),
-		// 	strconv.Itoa(e.VideoSource.Video.Format.Width),
-		// 	strconv.Itoa(e.VideoSource.Video.Format.Height),
-		// 	strconv.Itoa(e.VideoSource.Video.Format.BitDepth),
-		// 	metrics.BoolToString(e.VideoSource.Video.Format.Interlaced),
-		// 	metrics.BoolToString(e.VideoSource.Video.Format.TopFieldFirst),
-		// 	e.VideoSource.Video.Format.ChromaSubsampling,
-		// 	e.VideoSource.Video.Format.DisplayAspect,
-		// 	e.VideoSource.Video.Format.PixelAspect,
-		// 	metrics.BoolToString(e.VideoSource.Video.Format.ForcedAspect),
-		// ).Set(metrics.BoolToFloat64(e.VideoSource.Available))
+		for i, audio := range e.VideoSource.Audio {
+			mtrcs[MetricEncoderAudioInputStatus].WithLabelValues(
+				encoderIdx,
+				e.Description,
+				strconv.Itoa(i),
+				strconv.Itoa(audio.Format.BitDepth),
+				strconv.Itoa(audio.Format.SampleRate),
+				strconv.Itoa(audio.Format.Channels),
+			).Set(metrics.BoolToFloat64(e.VideoSource.Available))
+		}
 
 		mtrcs[MetricEncoderVideoStatus].WithLabelValues(
 			encoderIdx,

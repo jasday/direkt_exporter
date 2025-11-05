@@ -19,21 +19,28 @@ Healthcheck is available on /-/healthy
  
  Example config
  ```
- scrape_configs:
-  - job_name: 'blackbox'
-    metrics_path: /probe
+  - job_name: 'Encoder_Scrape'
     static_configs:
-      - targets:
-        - D01111   # Target serials
+      - targets: ['direkt_exporter:9110']
+        labels:
+          name: 'Encoder'
+    scrape_interval: 600s
+    scrape_timeout: 15s
+    params:
+      serial:
         - D01234
+    metrics_path: /probe
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 127.0.0.1:9110  # The exporter's real hostname:port.
-  - job_name: 'direkt_exporter'  # collect blackbox exporter's operational metrics.
-    static_configs:
-      - targets: ['127.0.0.1:9110']
+        replacement: direkt_exporter:9110
+```
+
+### Building
+
+```
+docker build -t direkt:latest .
 ```
